@@ -1,4 +1,4 @@
-/*
+package compaction_utils;/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -27,7 +27,6 @@ import org.apache.iotdb.tsfile.read.common.RowRecord;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,7 +36,7 @@ import java.util.List;
 public class DataVerifyUtils {
   private static String[] cachedData = null;
   public static void cacheQueryResult(Session session) throws IoTDBConnectionException, StatementExecutionException, IOException {
-    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s", Constant.SG_NAME));
+    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
     File cachedFile = new File(Constant.VERIFY_CACHED_FILE);
     if (cachedFile.exists()) {
       cachedFile.delete();
@@ -62,7 +61,7 @@ public class DataVerifyUtils {
 
   public static void verify(Session session) throws Exception {
     loadCachedQueryResult();
-    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s", Constant.SG_NAME));
+    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
     int currentIdx = 0;
     boolean wrongData = false;
     while (dataSet.hasNext()) {
