@@ -19,19 +19,29 @@
 
 import org.apache.iotdb.session.Session;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.util.Scanner;
+
 public class Main {
   public static void main(String[] args) throws Exception {
     Session session = new Session("127.0.0.1", 6667, "root", "root");
     session.open(false);
+//    deleteSg(session);
+    try {
+//      session.setStorageGroup(Constant.SG_NAME);
+//      DataGenerationUtils.generateUnseqData(session, 3, 5, 3, 5, 1900);
+//      DataVerifyUtils.cacheQueryResult(session);
+      DataVerifyUtils.verify(session);
+    } finally {
+      session.close();
+    }
+  }
+
+  public static void deleteSg(Session session) {
     try {
       session.executeNonQueryStatement("delete storage group " + Constant.SG_NAME);
     } catch (Exception e) {
-    }
-    try {
-      session.setStorageGroup(Constant.SG_NAME);
-      DataGenerationUtils.generateUnseqData(session, 3, 5, 3, 5, 1000);
-    } finally {
-      session.close();
     }
   }
 }
