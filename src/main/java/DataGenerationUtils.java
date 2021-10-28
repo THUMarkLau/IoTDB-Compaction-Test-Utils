@@ -37,14 +37,14 @@ public class DataGenerationUtils {
       for(int i = 0; i < deviceNum; ++i) {
         List<MeasurementSchema> schemaList = new ArrayList<>();
         for(int j = 0; j < measurementNum; ++j) {
-          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT64));
+          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
         }
         Tablet tablet = new Tablet(Constant.getDeviceName(i), schemaList, 100);
         for (long row = time; row < time + 100; row++) {
           int rowIndex = tablet.rowSize++;
           tablet.addTimestamp(rowIndex, row);
           for (int j = 0; j < measurementNum; ++j) {
-            long value = new Random().nextLong();
+            int value = new Random().nextInt() % 100000;
             tablet.addValue(schemaList.get(j).getMeasurementId(), rowIndex, value);
           }
           if (tablet.rowSize == tablet.getMaxRowNumber()) {
@@ -67,14 +67,14 @@ public class DataGenerationUtils {
       for(int i = 0; i < deviceNum; ++i) {
         List<MeasurementSchema> schemaList = new ArrayList<>();
         for(int j = 0; j < measurementNum; ++j) {
-          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT64));
+          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
         }
         Tablet tablet = new Tablet(Constant.getDeviceName(i), schemaList, 100);
         for (long row = time; row < time + 100; row++) {
           int rowIndex = tablet.rowSize++;
           tablet.addTimestamp(rowIndex, row);
           for (int j = 0; j < measurementNum; ++j) {
-            long value = new Random().nextLong();
+            int value = new Random().nextInt();
             tablet.addValue(schemaList.get(j).getMeasurementId(), rowIndex, value);
           }
           if (tablet.rowSize == tablet.getMaxRowNumber()) {

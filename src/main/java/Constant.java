@@ -23,6 +23,7 @@ public class Constant {
   public final static String MEASUREMENT_PATTERN = "s%d";
   public final static String INSERT_SQL_PATTERN = "insert into %s(timestamp, %s), values (%d, %d)";
   public final static String FLUSH_SQL = "flush";
+  public final static String VERIFY_CACHED_FILE = "verify_cache.txt";
 
   public static String getDeviceName(int deviceId) {
     return String.format(SG_NAME.concat(".") + DEVICE_PATTERN, deviceId);
