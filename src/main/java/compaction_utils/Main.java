@@ -22,25 +22,26 @@ package compaction_utils;
 import org.apache.iotdb.session.Session;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    if (args.length < 1) {
-      System.out.println("Need parameters!\n\tg: to generate data\n\tc: to cache verify data\n\tv: to verify data");
-      System.exit(-1);
-    }
-    Session session = new Session("127.0.0.1", 6667, "root", "root");
+    TestProperties properties = TestProperties.getInstance();
+    String host = properties.getProperty("host");
+    int port = Integer.parseInt(properties.getProperty("port"));
+    Session session = new Session(host, port, "root", "root");
     session.open(false);
 
+    String option = properties.getProperty("option");
     try {
-      switch (args[0]) {
-        case "g":
+      switch (option.toLowerCase(Locale.ROOT)) {
+        case "generate":
           generateData(session);
           break;
-        case "c":
+        case "cache-result":
           cachedVerifyData(session);
           break;
-        case "v":
+        case "verify":
           DataVerifyUtils.verify(session);
           break;
       }
@@ -56,10 +57,23 @@ public class Main {
     }
   }
 
-  public static void generateData(Session session) throws  Exception{
+  public static void generateData(Session session) throws Exception {
     deleteSg(session);
     session.setStorageGroup(compaction_utils.Constant.SG_NAME);
-    compaction_utils.DataGenerationUtils.generateUnseqData(session, 11, 0, 5, 5, 2000);
+    TestProperties properties = TestProperties.getInstance();
+    int seqFileNum = Integer.parseInt(properties.getProperty("seq_file_num"));
+    int unseqFileNum = Integer.parseInt(properties.getProperty("unseq_file_num"));
+    int deviceNum = Integer.parseInt(properties.getProperty("device_num"));
+    int measurementNum = Integer.parseInt(properties.getProperty("measurement_num"));
+    int pointInEachFileForEachMeasurement =
+        Integer.parseInt(properties.getProperty("point_num_for_each_measurement_in_each_file"));
+    compaction_utils.DataGenerationUtils.generateUnseqData(
+        session,
+        seqFileNum,
+        unseqFileNum,
+        deviceNum,
+        measurementNum,
+        pointInEachFileForEachMeasurement);
   }
 
   public static void cachedVerifyData(Session session) throws Exception {

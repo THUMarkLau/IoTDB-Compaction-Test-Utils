@@ -1,4 +1,5 @@
-package compaction_utils;/*
+package compaction_utils;
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -18,22 +19,30 @@ package compaction_utils;/*
  */
 
 public class Constant {
-  public final static String SG_NAME = "root.sg_test";
-  public final static String DEVICE_PATTERN = "d%d";
-  public final static String MEASUREMENT_PATTERN = "s%d";
-  public final static String INSERT_SQL_PATTERN = "insert into %s(timestamp, %s), values (%d, %d)";
-  public final static String FLUSH_SQL = "flush";
-  public final static String VERIFY_CACHED_FILE = "verify_cache.txt";
+  public static final String SG_NAME = "root.sg_test";
+  public static final String DEVICE_PATTERN = "d%d";
+  public static final String MEASUREMENT_PATTERN = "s%d";
+  public static final String INSERT_SQL_PATTERN = "insert into %s(timestamp, %s), values (%d, %d)";
+  public static final String FLUSH_SQL = "flush";
+  public static final String VERIFY_CACHED_FILE = "verify_cache.txt";
 
   public static String getDeviceName(int deviceId) {
     return String.format(SG_NAME.concat(".") + DEVICE_PATTERN, deviceId);
   }
 
   public static String getMeasurementName(int deviceId, int measurementId) {
-    return String.format(SG_NAME.concat(".") + DEVICE_PATTERN.concat(".") + MEASUREMENT_PATTERN, deviceId, measurementId);
+    return String.format(
+        SG_NAME.concat(".") + DEVICE_PATTERN.concat(".") + MEASUREMENT_PATTERN,
+        deviceId,
+        measurementId);
   }
 
   public static String getInsertSql(int deviceId, int measurementId, int timestamp, int value) {
-    return String.format(INSERT_SQL_PATTERN, getDeviceName(deviceId), String.format(MEASUREMENT_PATTERN, measurementId), timestamp, value);
+    return String.format(
+        INSERT_SQL_PATTERN,
+        getDeviceName(deviceId),
+        String.format(MEASUREMENT_PATTERN, measurementId),
+        timestamp,
+        value);
   }
 }

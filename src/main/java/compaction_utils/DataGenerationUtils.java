@@ -1,4 +1,5 @@
-package compaction_utils;/*
+package compaction_utils;
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -30,14 +31,23 @@ import java.util.Random;
 
 public class DataGenerationUtils {
 
-  public static void generateUnseqData(Session session, int seqFileNum, int unseqFileNum, int deviceNum, int measurementNum, long pointInFileForEachTS) throws IoTDBConnectionException, StatementExecutionException {
+  public static void generateUnseqData(
+      Session session,
+      int seqFileNum,
+      int unseqFileNum,
+      int deviceNum,
+      int measurementNum,
+      long pointInFileForEachTS)
+      throws IoTDBConnectionException, StatementExecutionException {
     long startTimeForSeqData = pointInFileForEachTS * unseqFileNum;
     long endTimeForSeqData = startTimeForSeqData + pointInFileForEachTS * seqFileNum;
-    for(long time = startTimeForSeqData; time < endTimeForSeqData;) {
-      for(int i = 0; i < deviceNum; ++i) {
+    for (long time = startTimeForSeqData; time < endTimeForSeqData; ) {
+      for (int i = 0; i < deviceNum; ++i) {
         List<MeasurementSchema> schemaList = new ArrayList<>();
-        for(int j = 0; j < measurementNum; ++j) {
-          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
+        for (int j = 0; j < measurementNum; ++j) {
+          schemaList.add(
+              new MeasurementSchema(
+                  String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
         }
         Tablet tablet = new Tablet(Constant.getDeviceName(i), schemaList, 100);
         for (long row = time; row < time + 100; row++) {
@@ -63,11 +73,13 @@ public class DataGenerationUtils {
       }
     }
     session.executeNonQueryStatement("flush");
-    for(long time = 0; time < startTimeForSeqData;) {
-      for(int i = 0; i < deviceNum; ++i) {
+    for (long time = 0; time < startTimeForSeqData; ) {
+      for (int i = 0; i < deviceNum; ++i) {
         List<MeasurementSchema> schemaList = new ArrayList<>();
-        for(int j = 0; j < measurementNum; ++j) {
-          schemaList.add(new MeasurementSchema(String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
+        for (int j = 0; j < measurementNum; ++j) {
+          schemaList.add(
+              new MeasurementSchema(
+                  String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
         }
         Tablet tablet = new Tablet(Constant.getDeviceName(i), schemaList, 100);
         for (long row = time; row < time + 100; row++) {

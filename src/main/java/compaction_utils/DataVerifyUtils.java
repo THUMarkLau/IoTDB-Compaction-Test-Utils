@@ -1,4 +1,5 @@
-package compaction_utils;/*
+package compaction_utils;
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -35,25 +36,31 @@ import java.util.List;
 
 public class DataVerifyUtils {
   private static String[] cachedData = null;
-  public static void cacheQueryResult(Session session) throws IoTDBConnectionException, StatementExecutionException, IOException {
-    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
+
+  public static void cacheQueryResult(Session session)
+      throws IoTDBConnectionException, StatementExecutionException, IOException {
+    SessionDataSet dataSet =
+        session.executeQueryStatement(
+            String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
     File cachedFile = new File(Constant.VERIFY_CACHED_FILE);
     if (cachedFile.exists()) {
       cachedFile.delete();
     }
-    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(Constant.VERIFY_CACHED_FILE));
+    BufferedOutputStream os =
+        new BufferedOutputStream(new FileOutputStream(Constant.VERIFY_CACHED_FILE));
     while (dataSet.hasNext()) {
       RowRecord record = dataSet.next();
       List<Field> fields = record.getFields();
       for (Field field : fields) {
-        os.write((field.getObjectValue(field.getDataType()) + " ").getBytes(StandardCharsets.UTF_8));
+        os.write(
+            (field.getObjectValue(field.getDataType()) + " ").getBytes(StandardCharsets.UTF_8));
       }
     }
     os.flush();
   }
 
   private static void loadCachedQueryResult() throws IOException {
-    try(BufferedReader reader = new BufferedReader(new FileReader(Constant.VERIFY_CACHED_FILE))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(Constant.VERIFY_CACHED_FILE))) {
       String lineData = reader.readLine();
       cachedData = lineData.split(" ");
     }
@@ -61,7 +68,9 @@ public class DataVerifyUtils {
 
   public static void verify(Session session) throws Exception {
     loadCachedQueryResult();
-    SessionDataSet dataSet = session.executeQueryStatement(String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
+    SessionDataSet dataSet =
+        session.executeQueryStatement(
+            String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
     int currentIdx = 0;
     boolean wrongData = false;
     while (dataSet.hasNext()) {
@@ -69,10 +78,12 @@ public class DataVerifyUtils {
       List<Field> fields = record.getFields();
       for (Field field : fields) {
         if (!field.getObjectValue(field.getDataType()).toString().equals(cachedData[currentIdx])) {
-          System.out.printf("Error!! Cached data is %s, but %s given\n", cachedData[currentIdx], field.getObjectValue(field.getDataType()));
+          System.out.printf(
+              "Error!! Cached data is %s, but %s given\n",
+              cachedData[currentIdx], field.getObjectValue(field.getDataType()));
           wrongData = true;
         }
-        currentIdx ++;
+        currentIdx++;
       }
     }
     if (!wrongData) {
