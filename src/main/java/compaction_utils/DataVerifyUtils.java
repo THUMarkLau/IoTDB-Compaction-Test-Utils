@@ -77,7 +77,9 @@ public class DataVerifyUtils {
       RowRecord record = dataSet.next();
       List<Field> fields = record.getFields();
       for (Field field : fields) {
-        if (!field.getObjectValue(field.getDataType()).toString().equals(cachedData[currentIdx])) {
+        if (Double.parseDouble(field.getObjectValue(field.getDataType()).toString())
+                - Double.parseDouble(cachedData[currentIdx])
+            > Constant.VERIFY_ERROR) {
           System.out.printf(
               "Error!! Cached data is %s, but %s given\n",
               cachedData[currentIdx], field.getObjectValue(field.getDataType()));

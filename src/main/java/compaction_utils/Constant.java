@@ -19,12 +19,13 @@ package compaction_utils;
  */
 
 public class Constant {
-  public static final String SG_NAME = "root.sg_test";
+  public static final String SG_NAME = "root.test.g_0";
   public static final String DEVICE_PATTERN = "d%d";
   public static final String MEASUREMENT_PATTERN = "s%d";
   public static final String INSERT_SQL_PATTERN = "insert into %s(timestamp, %s), values (%d, %d)";
   public static final String FLUSH_SQL = "flush";
   public static final String VERIFY_CACHED_FILE = "verify_cache.txt";
+  public static final double VERIFY_ERROR = 0.0001;
 
   public static String getDeviceName(int deviceId) {
     return String.format(SG_NAME.concat(".") + DEVICE_PATTERN, deviceId);
