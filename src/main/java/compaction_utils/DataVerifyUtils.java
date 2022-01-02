@@ -1,4 +1,3 @@
-package compaction_utils;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,6 +16,8 @@ package compaction_utils;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package compaction_utils;
 
 import org.apache.iotdb.rpc.IoTDBConnectionException;
 import org.apache.iotdb.rpc.StatementExecutionException;
@@ -41,7 +42,9 @@ public class DataVerifyUtils {
       throws IoTDBConnectionException, StatementExecutionException, IOException {
     SessionDataSet dataSet =
         session.executeQueryStatement(
-            String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
+            String.format(
+                "select count(*), avg(*), max_value(*), min_value(*), sum(*) from %s.**",
+                Constant.SG_NAME));
     File cachedFile = new File(Constant.VERIFY_CACHED_FILE);
     if (cachedFile.exists()) {
       cachedFile.delete();
@@ -70,7 +73,9 @@ public class DataVerifyUtils {
     loadCachedQueryResult();
     SessionDataSet dataSet =
         session.executeQueryStatement(
-            String.format("select count(*), avg(*) from %s.**", Constant.SG_NAME));
+            String.format(
+                "select count(*), avg(*), max_value(*), min_value(*), sum(*) from %s.**",
+                Constant.SG_NAME));
     int currentIdx = 0;
     boolean wrongData = false;
     while (dataSet.hasNext()) {
