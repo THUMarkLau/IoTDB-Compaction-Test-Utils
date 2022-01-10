@@ -26,7 +26,7 @@ import java.util.Properties;
 public class TestProperties {
   private static final TestProperties INSTANCE = new TestProperties();
   private Properties properties;
-  private String propertiesFile = "../test.properties";
+  private String propertiesFile = "test.properties";
 
   public TestProperties() {
     try {
