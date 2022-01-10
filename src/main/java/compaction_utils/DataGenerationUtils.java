@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class DataGenerationUtils {
 
-  public static void generateUnseqData(
+  public static void generateNotOverlapNotAlignedData(
       Session session,
       int seqFileNum,
       int unseqFileNum,
@@ -106,4 +106,13 @@ public class DataGenerationUtils {
     }
     session.executeNonQueryStatement("flush");
   }
+
+  public static void generateNotOverlapAlignedData(
+      Session session,
+      int seqNum,
+      int unseqNum,
+      int deviceNum,
+      int measurementNum,
+      long pointInFileForEachTS)
+      throws IoTDBConnectionException, StatementExecutionException {}
 }

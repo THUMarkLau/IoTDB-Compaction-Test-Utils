@@ -21,7 +21,6 @@ package compaction_utils;
 
 import org.apache.iotdb.session.Session;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 public class Main {
@@ -67,7 +66,7 @@ public class Main {
     int measurementNum = Integer.parseInt(properties.getProperty("measurement_num"));
     int pointInEachFileForEachMeasurement =
         Integer.parseInt(properties.getProperty("point_num_for_each_measurement_in_each_file"));
-    compaction_utils.DataGenerationUtils.generateUnseqData(
+    compaction_utils.DataGenerationUtils.generateNotOverlapNotAlignedData(
         session,
         seqFileNum,
         unseqFileNum,
