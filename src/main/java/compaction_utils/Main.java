@@ -66,13 +66,65 @@ public class Main {
     int measurementNum = Integer.parseInt(properties.getProperty("measurement_num"));
     int pointInEachFileForEachMeasurement =
         Integer.parseInt(properties.getProperty("point_num_for_each_measurement_in_each_file"));
-    compaction_utils.DataGenerationUtils.generateNotOverlapNotAlignedData(
-        session,
-        seqFileNum,
-        unseqFileNum,
-        deviceNum,
-        measurementNum,
-        pointInEachFileForEachMeasurement);
+    switch (properties.getProperty("generate-mod")) {
+      case "NOT-ALIGNED":
+        if (!Boolean.parseBoolean(properties.getProperty("overlap"))) {
+          compaction_utils.DataGenerationUtils.generateNotOverlapNotAlignedData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        } else {
+          compaction_utils.DataGenerationUtils.generateOverlapNotAlignedData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        }
+        break;
+      case "ALIGNED":
+        if (!Boolean.parseBoolean(properties.getProperty("overlap"))) {
+          compaction_utils.DataGenerationUtils.generateNotOverlapAlignedData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        } else {
+          compaction_utils.DataGenerationUtils.generateOverlapAlignedData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        }
+        break;
+      case "MIX":
+        if (!Boolean.parseBoolean(properties.getProperty("overlap"))) {
+          compaction_utils.DataGenerationUtils.generateNotOverlapMixData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        } else {
+          compaction_utils.DataGenerationUtils.generateOverlapMixData(
+              session,
+              seqFileNum,
+              unseqFileNum,
+              deviceNum,
+              measurementNum,
+              pointInEachFileForEachMeasurement);
+        }
+        break;
+    }
   }
 
   public static void cachedVerifyData(Session session) throws Exception {

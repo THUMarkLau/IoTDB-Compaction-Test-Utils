@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,30 +18,21 @@
  */
 package compaction_utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
+import org.apache.iotdb.tsfile.file.metadata.enums.CompressionType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSDataType;
+import org.apache.iotdb.tsfile.file.metadata.enums.TSEncoding;
+import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 
-public class TestProperties {
-  private static final TestProperties INSTANCE = new TestProperties();
-  private Properties properties;
-  private String propertiesFile = "../test.properties";
+import java.util.ArrayList;
+import java.util.List;
 
-  public TestProperties() {
-    try {
-      properties = new Properties();
-      properties.load(new FileInputStream(new File(propertiesFile)));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static TestProperties getInstance() {
-    return INSTANCE;
-  }
-
-  public String getProperty(String key) {
-    return properties.getProperty(key);
-  }
+public class AlignedGenerationResource {
+  List<String> deviceIds = new ArrayList<>();
+  List<String> measurements = new ArrayList<>();
+  List<TSDataType> dataTypes = new ArrayList<>();
+  List<TSEncoding> encodings = new ArrayList<>();
+  List<CompressionType> compressionTypes = new ArrayList<>();
+  List<String> aliasList = new ArrayList<>();
+  List<MeasurementSchema> schemaList = new ArrayList<>();
+  boolean init = false;
 }
