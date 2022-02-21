@@ -28,9 +28,10 @@ import org.apache.iotdb.tsfile.write.record.Tablet;
 import org.apache.iotdb.tsfile.write.schema.MeasurementSchema;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class DataGenerationUtils {
   static TestProperties testProperties = TestProperties.getInstance();
@@ -80,19 +81,29 @@ public class DataGenerationUtils {
       int deviceNum, int measurementNum, long startTime, long endTime, Session session)
       throws IoTDBConnectionException, StatementExecutionException {
     boolean useRandom = Boolean.parseBoolean(testProperties.getProperty("use-random"));
+    Random random = new Random();
+    boolean useRandomSchema =
+        Boolean.parseBoolean(testProperties.getProperty("diff-schema-in-each-tsfile"));
+    System.out.println(useRandomSchema);
     for (int i = 0; i < deviceNum; ++i) {
       List<MeasurementSchema> schemaList = new ArrayList<>();
+      Set<Integer> schemaIdxSet = new HashSet<>();
       for (int j = 0; j < measurementNum; ++j) {
+        int chosenIdx = useRandomSchema ? random.nextInt(measurementNum) : j;
+        if (schemaIdxSet.contains(chosenIdx)) {
+          continue;
+        }
         schemaList.add(
             new MeasurementSchema(
-                String.format(Constant.MEASUREMENT_PATTERN, j), TSDataType.INT32));
+                String.format(Constant.MEASUREMENT_PATTERN, chosenIdx), TSDataType.INT32));
+        schemaIdxSet.add(chosenIdx);
       }
       Tablet tablet = new Tablet(Constant.getDeviceName(i), schemaList, 100);
       for (long row = startTime; row < endTime; row++) {
         int rowIndex = tablet.rowSize++;
         tablet.addTimestamp(rowIndex, row);
-        for (int j = 0; j < measurementNum; ++j) {
-          int value = useRandom ? new Random().nextInt() % 100000 : (int) row;
+        for (int j = 0; j < schemaList.size(); ++j) {
+          int value = useRandom ? random.nextInt() % 100000 : (int) row;
           tablet.addValue(schemaList.get(j).getMeasurementId(), rowIndex, value);
         }
         if (tablet.rowSize == tablet.getMaxRowNumber()) {
@@ -121,7 +132,6 @@ public class DataGenerationUtils {
     registerAlignedSeries(deviceNum, measurementNum, session, resource);
     for (long time = startTimeForSeqData; time < endTimeForSeqData; time += pointInFileForEachTS) {
       writeAlignedTsFile(time, time + pointInFileForEachTS, resource, session);
-      session.executeNonQueryStatement("flush");
     }
     session.executeNonQueryStatement("flush");
     for (long time = 0; time < startTimeForSeqData; time += pointInFileForEachTS) {
@@ -190,15 +200,32 @@ public class DataGenerationUtils {
       long startTime, long endTime, AlignedGenerationResource resource, Session session)
       throws IoTDBConnectionException, StatementExecutionException {
     boolean useRandom = Boolean.parseBoolean(testProperties.getProperty("use-random"));
+    Random random = new Random();
+    boolean useRandomSchema =
+        Boolean.parseBoolean(testProperties.getProperty("diff-schema-in-each-tsfile"));
     for (String device : resource.deviceIds) {
-      Tablet tablet = new Tablet(device, resource.schemaList);
+      List<MeasurementSchema> schemaList = new ArrayList<>();
+      if (useRandomSchema) {
+        Set<Integer> randomSchemaIdxSet = new HashSet<>();
+        for (int i = 0; i < resource.schemaList.size(); ++i) {
+          int idx = random.nextInt(resource.schemaList.size());
+          if (randomSchemaIdxSet.contains(idx)) {
+            continue;
+          }
+          schemaList.add(resource.schemaList.get(idx));
+          randomSchemaIdxSet.add(idx);
+        }
+      } else {
+        schemaList = resource.schemaList;
+      }
+      Tablet tablet = new Tablet(device, schemaList);
       tablet.setAligned(true);
       for (long row = startTime; row < endTime; row++) {
         int rowIndex = tablet.rowSize++;
         tablet.addTimestamp(rowIndex, row);
-        for (String measurement : resource.measurements) {
-          int value = useRandom ? new Random().nextInt() % 100000 : (int) row;
-          tablet.addValue(measurement, rowIndex, value);
+        for (MeasurementSchema schema : schemaList) {
+          int value = useRandom ? random.nextInt() % 100000 : (int) row;
+          tablet.addValue(schema.getMeasurementId(), rowIndex, value);
         }
         if (tablet.rowSize == tablet.getMaxRowNumber()) {
           session.insertTablet(tablet, true);
