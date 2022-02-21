@@ -105,6 +105,7 @@ public class DataGenerationUtils {
         tablet.reset();
       }
     }
+    session.executeNonQueryStatement("FLUSH");
   }
 
   public static void generateNotOverlapAlignedData(
